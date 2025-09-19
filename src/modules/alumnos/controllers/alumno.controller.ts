@@ -5,12 +5,12 @@ import AlumnoService from '../services/alumno.service';
 export async function getAlumnoById(req: AlumnoGetRequest, res: Response) {
     const id = parseInt(req.params.id);
     const alumno = await AlumnoService.getAlumnoByIdService(id);
-    res.status(200).json(alumno);
+    res.status(200).json({"message": "Obtenido alumno", "alumno": alumno});
 }
 
 export async function getAlumnos(_: Request, res: Response){
     const alumnos = await AlumnoService.getAlumnosAllService();
-    res.status(200).json(alumnos);
+    res.status(200).json({"message": "Obtenidos alumnos", "alumnos": alumnos});
 }
 
 export async function createAlumno(req: AlumnoRequest, res: Response) {

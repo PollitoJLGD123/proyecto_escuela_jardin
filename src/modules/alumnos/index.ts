@@ -1,5 +1,5 @@
 // importaciones
-import  alumnoRouter from './routes';
+import  alumnoRouter from './routes/index.route';
 import  { Alumno } from './models/alumno.entity';
 
 
