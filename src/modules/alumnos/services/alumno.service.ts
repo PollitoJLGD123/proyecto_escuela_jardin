@@ -1,7 +1,8 @@
-import { Op } from 'sequelize';
+import { CreationAttributes  } from 'sequelize';
 import { Alumno } from '../models/alumno.entity';
 import createError from 'http-errors';
 import { AlumnoEntity } from '../types/alumno.type';
+import { Op } from 'sequelize';
 
 async function getAlumnoByIdService(id: number): Promise<Alumno> {
 
@@ -31,14 +32,7 @@ async function createAlumnoService(alumno: AlumnoEntity): Promise<Alumno> {
         throw createError(400, 'Ya existe un alumno con ese dni');
     }
     
-    const alumnoCreated = await Alumno.create({
-        nombre: alumno.nombre,
-        apellido: alumno.apellido,
-        dni: alumno.dni,
-        fechaNacimiento: alumno.fechaNacimiento,
-        direccion: alumno.direccion,
-        telefono: alumno.telefono,
-    });
+    const alumnoCreated = await Alumno.create(alumno);
 
     if (!alumnoCreated) {
         throw createError(500, 'Error al crear alumno');
@@ -55,14 +49,20 @@ async function updateAlumnoService(id: number, alumno: AlumnoEntity):  Promise<A
         throw createError(404, 'Alumno no encontrado');
     }
 
-    const alumnoUpdated = await alumnoExist.update({
-        nombre: alumno.nombre,
-        apellido: alumno.apellido,
-        dni: alumno.dni,
-        fechaNacimiento: alumno.fechaNacimiento,
-        direccion: alumno.direccion,
-        telefono: alumno.telefono,
-    });
+    if (alumno.dni) {
+        const duplicateDni = await Alumno.findOne({
+            where: {
+                dni: alumno.dni,
+                idAlumno: { [Op.ne]: id },
+            },
+        });
+
+        if (duplicateDni) {
+            throw createError(400, "Ya existe un docente con ese DNI");
+        }
+    }
+
+    const alumnoUpdated = await alumnoExist.update(alumno);
     
     if (!alumnoUpdated) {
         throw createError(500, 'Error al actualizar alumno');

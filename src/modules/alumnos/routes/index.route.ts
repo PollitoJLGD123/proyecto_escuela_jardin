@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { getAlumnoById, getAlumnos, createAlumno, updateAlumno, deleteAlumno } from '../controllers/alumno.controller';
-import { validateAlumnoCreate, validateAlumnoUpdate, validateParams } from '../middlewares/alumno.middeware';
+import { validateAlumnoBody, validateAlumnoParams } from '../middlewares/alumno.middeware';
 
 const router = Router();
 
-router.get('/:id',validateParams, getAlumnoById);
+router.get('/:id', validateAlumnoParams, getAlumnoById);
 router.get('/', getAlumnos);
-router.post('/',validateAlumnoCreate, createAlumno);
-router.put('/:id',validateAlumnoUpdate, updateAlumno);
-router.delete('/:id',validateParams, deleteAlumno);
+router.post('/', validateAlumnoBody , createAlumno);
+router.put('/:id',validateAlumnoParams, validateAlumnoBody, updateAlumno);
+router.delete('/:id', validateAlumnoParams, deleteAlumno);
 
 export default router;

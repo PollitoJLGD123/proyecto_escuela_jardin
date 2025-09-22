@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import { DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } from '../config/database.config';
-import { modelsList } from '../modules/models';
+import { modelsList } from '../common/models';
 
 const sequelize = new Sequelize({
     host: DB_HOST,

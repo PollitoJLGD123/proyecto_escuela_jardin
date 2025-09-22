@@ -1,27 +1,23 @@
-import { DATE, ENUM, Op, InferAttributes } from 'sequelize';
-import { Model, Column, Table, PrimaryKey, AutoIncrement, BelongsToMany, HasMany, ForeignKey, BelongsTo, HasOne, AllowNull, Unique, Length, Default, BeforeCreate, IsEmail } from 'sequelize-typescript';
-import type { AlumnoAttributes, AlumnoCreationAttributes } from '../types/alumno.type';
-
+import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, BelongsTo, ForeignKey, HasMany, AllowNull, Default, Unique, Length, IsEmail } from 'sequelize-typescript';
+import { DATE, InferAttributes, InferCreationAttributes } from 'sequelize';
+import type { DocenteAttributes, DocenteCreationAttributes } from '../types/docente.type';
 
 @Table({
-    tableName: 'alumnos',
+    tableName: 'docentes',
     timestamps: true,
     underscored: true,
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
 })
-export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
+export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes> {
+
     @PrimaryKey
     @AutoIncrement
     @Column({
-        field: 'idAlumno',
+        field: 'idDocente',
     })
-    idAlumno!: number;
+    idDocente!: number;
 
-    @Length({
-        min: 5,
-        max: 50,
-    })
     @Column({
         field: 'nombre',
         allowNull: false,
@@ -29,16 +25,13 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     })
     nombre!: string;
 
-    @Length({
-        min: 5,
-        max: 50,
-    })
     @Column({
         field: 'apellido',
         allowNull: false,
         type: "varchar(50)",
     })
     apellido!: string;
+
 
     @Length({
         min: 8,
@@ -53,13 +46,13 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     })
     dni!: string;
 
-    @AllowNull
+    @IsEmail
     @Column({
-        field: 'fechaNacimiento',
-        type: DATE,
-        allowNull: true,
+        field: 'email',
+        allowNull: false,
+        type: "varchar(50)",
     })
-    fechaNacimiento?: Date;
+    email!: string;
 
     @Length({
         min: 1,
@@ -84,5 +77,20 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     })
     telefono?: string;
 
-    //dejamos referencia al padre
+    @AllowNull
+    @Column({
+        field: 'fechaNacimiento',
+        type: DATE,
+        allowNull: true,
+    })
+    fechaNacimiento?: Date;
+
+    @AllowNull
+    @Column({
+        field: 'fechaIngreso',
+        type: DATE,
+        allowNull: true,
+    })
+    fechaIngreso?: Date;
+
 }
