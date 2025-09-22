@@ -19,6 +19,7 @@ export interface AlumnoEntity {
     fechaNacimiento?: Date;
     direccion?: string;
     telefono?: string;
+    idPadre: number;
 }
 
 export type AlumnoAttributes = InferAttributes<Alumno>;

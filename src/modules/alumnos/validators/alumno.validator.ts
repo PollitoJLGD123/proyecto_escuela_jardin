@@ -8,6 +8,7 @@ export const alumnoValidationSchema = Joi.object<AlumnoEntity>({
     fechaNacimiento: Joi.date().optional(),
     direccion: Joi.string().optional(),
     telefono: Joi.string().min(9).max(9).optional(), //.allow(null) //otra forma de hacerlo null
+    idPadre: Joi.number().positive().required(),
 });
 
 export const almunoParamsValidationSchema = Joi.object({

@@ -1,8 +1,9 @@
-import { CreationAttributes  } from 'sequelize';
+
 import { Alumno } from '../models/alumno.entity';
 import createError from 'http-errors';
 import { AlumnoEntity } from '../types/alumno.type';
-import { Op } from 'sequelize';
+import { Padre } from '../../padres';
+import { Dni } from '../../../common/models/dni.entity';
 
 async function getAlumnoByIdService(id: number): Promise<Alumno> {
 
@@ -22,14 +23,20 @@ async function getAlumnosAllService(): Promise<Alumno[]> {
 
 async function createAlumnoService(alumno: AlumnoEntity): Promise<Alumno> {
 
-    const alumnoExist = await Alumno.findOne({
+    const personalExist = await Dni.findOne({
         where: {
             dni: alumno.dni
         }
     });
 
-    if (alumnoExist) {
-        throw createError(400, 'Ya existe un alumno con ese dni');
+    if (personalExist) {
+        throw createError(400, 'Ya existe una persona registrada con ese dni');
+    }
+
+    const padre = await Padre.findByPk(alumno.idPadre);
+
+    if (!padre) {
+        throw createError(400, 'No existe un padre con ese id');
     }
     
     const alumnoCreated = await Alumno.create(alumno);
@@ -49,16 +56,21 @@ async function updateAlumnoService(id: number, alumno: AlumnoEntity):  Promise<A
         throw createError(404, 'Alumno no encontrado');
     }
 
+    const padre = await Padre.findByPk(alumno.idPadre);
+
+    if (!padre) {
+        throw createError(400, 'No existe un padre con ese id');
+    }
+
     if (alumno.dni) {
-        const duplicateDni = await Alumno.findOne({
+        const duplicateDni = await Dni.count({
             where: {
                 dni: alumno.dni,
-                idAlumno: { [Op.ne]: id },
             },
         });
 
-        if (duplicateDni) {
-            throw createError(400, "Ya existe un docente con ese DNI");
+        if (duplicateDni >= 1) {
+            throw createError(400, "Ya existe personal con ese DNI");
         }
     }
 

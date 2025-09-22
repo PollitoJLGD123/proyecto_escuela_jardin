@@ -1,6 +1,7 @@
-import { Table, Column, Model, DataType, PrimaryKey, AutoIncrement, BelongsTo, ForeignKey, HasMany, AllowNull, Default, Unique, Length, IsEmail } from 'sequelize-typescript';
-import { DATE, InferAttributes, InferCreationAttributes } from 'sequelize';
+import { Table, Column, Model, PrimaryKey, AutoIncrement, BelongsTo, ForeignKey, AfterCreate, AllowNull, BeforeCreate, Unique, Length, IsEmail } from 'sequelize-typescript';
+import { DATE } from 'sequelize';
 import type { DocenteAttributes, DocenteCreationAttributes } from '../types/docente.type';
+import { Dni } from '../../../common/models/dni.entity';
 
 @Table({
     tableName: 'docentes',
@@ -93,4 +94,17 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
     })
     fechaIngreso?: Date;
 
+
+    @BeforeCreate
+    static async validateUniqueDni(instance: Docente) {
+        const exists = await Dni.findOne({ where: { dni: instance.dni } });
+        if (exists) {
+            throw new Error(`El DNI ${instance.dni} ya está registrado`);
+        }
+    }
+
+    @AfterCreate
+    static async createDniInTable(instance: Docente) {
+        await Dni.create({ dni: instance.dni });
+    }
 }

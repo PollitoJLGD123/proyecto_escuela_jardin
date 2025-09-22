@@ -1,7 +1,7 @@
 import { Padre } from '../models/padre.entity';
 import createHttpError from 'http-errors';
 import { PadreEntity } from '../types/padre.type';
-import { Op } from 'sequelize';
+import { Dni } from '../../../common/models/dni.entity';
 
 async function getPadreByIdService(idPadre: number): Promise<Padre> {
     const padre = await Padre.findByPk(idPadre);
@@ -17,14 +17,14 @@ async function getPadresAllService(): Promise<Padre[]> {
 }
 
 async function createPadreService(padre: PadreEntity): Promise<Padre> {
-    const padreExist = await Padre.findOne({
+    const personalExist = await Dni.findOne({
         where: {
             dni: padre.dni
         }
     });
 
-    if (padreExist) {
-        throw createHttpError(400, 'Ya existe un padre con ese dni');
+    if (personalExist) {
+        throw createHttpError(400, 'Ya existe una persona registrada con ese dni');
     }
     
     const padreCreated = await Padre.create(padre);
@@ -45,15 +45,14 @@ async function updatePadreService(idPadre: number, padre: PadreEntity):  Promise
     }
 
     if (padre.dni) {
-        const duplicateDni = await Padre.findOne({
+        const duplicateDni = await Dni.count({
             where: {
                 dni: padre.dni,
-                idPadre: { [Op.ne]: idPadre },
             },
         });
 
-        if (duplicateDni) {
-            throw createHttpError(400, "Ya existe un padre con ese DNI");
+        if (duplicateDni >= 1) {
+            throw createHttpError(400, "Ya existe personal con ese DNI");
         }
     }
 

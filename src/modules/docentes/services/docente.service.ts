@@ -2,6 +2,7 @@ import { Docente } from '../models/docente.entity';
 import createHttpError from 'http-errors';
 import { DocenteEntity } from '../types/docente.type';
 import { Op } from 'sequelize';
+import { Dni } from '../../../common/models/dni.entity';
 
 async function getDocentesService(): Promise<Docente[]> {
     const docentes = await Docente.findAll();
@@ -30,16 +31,21 @@ async function getDocenteByDniService(dni: string): Promise<Docente> {
 
 async function createDocenteService(data: DocenteEntity): Promise<Docente> {
     
-    const docenteExist = await Docente.findOne({
+    const personalExist = await Dni.findOne({
         where: {
             dni: data.dni
         }
     });
 
-    if (docenteExist) {
-        throw createHttpError(400, 'Docente ya existe');
+    if (personalExist) {
+        throw createHttpError(400, 'Ya existe una persona registrada con ese dni');
     }
     const docente = await Docente.create(data);
+
+    if (!docente) {
+        throw createHttpError(500, 'Error al crear docente');
+    }
+
     return docente;
 }
 
@@ -52,15 +58,14 @@ async function updateDocenteService(idDocente: number, data: DocenteEntity): Pro
     }
 
     if (data.dni) {
-        const duplicateDni = await Docente.findOne({
+        const duplicateDni = await Dni.count({
             where: {
                 dni: data.dni,
-                idDocente: { [Op.ne]: idDocente },
             },
         });
 
-        if (duplicateDni) {
-            throw createHttpError(400, "Ya existe un docente con ese DNI");
+        if (duplicateDni >= 1) {
+            throw createHttpError(400, "Ya existe personal con ese DNI");
         }
     }
 

@@ -1,7 +1,8 @@
 import { DATE, ENUM, Op, InferAttributes } from 'sequelize';
-import { Model, Column, Table, PrimaryKey, AutoIncrement, BelongsToMany, HasMany, ForeignKey, BelongsTo, HasOne, AllowNull, Unique, Length, Default, BeforeCreate, IsEmail } from 'sequelize-typescript';
+import { Model, Column, Table, PrimaryKey, AutoIncrement, BelongsToMany, HasMany, ForeignKey, BelongsTo, HasOne, AllowNull, Unique, Length, Default, BeforeCreate, IsEmail, AfterCreate } from 'sequelize-typescript';
 import type { AlumnoAttributes, AlumnoCreationAttributes } from '../types/alumno.type';
-
+import { Padre } from '../../padres';
+import { Dni } from '../../../common/models/dni.entity';
 
 @Table({
     tableName: 'alumnos',
@@ -85,4 +86,31 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     telefono?: string;
 
     //dejamos referencia al padre
+    @BelongsTo(() => Padre)
+    padre?: Padre;
+
+    @ForeignKey(() => Padre)
+    @Column({
+        field: 'idPadre',
+        allowNull: true,
+        type: "int",
+        // references: {
+        //     model: Padre,
+        //     key: 'idPadre',
+        // }
+    })
+    idPadre!: number;
+
+    @BeforeCreate
+    static async validateUniqueDni(instance: Alumno) {
+        const exists = await Dni.findOne({ where: { dni: instance.dni } });
+        if (exists) {
+            throw new Error(`El DNI ${instance.dni} ya está registrado`);
+        }
+    }
+
+    @AfterCreate
+    static async createDniInTable(instance: Alumno) {
+        await Dni.create({ dni: instance.dni });
+    }
 }
