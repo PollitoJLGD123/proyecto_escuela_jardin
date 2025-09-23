@@ -6,5 +6,6 @@ export const encryptPassword = async (password: string): Promise<string> => {
 };
 
 export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-    return await bcrypt.compare(password, hashedPassword);
+    const normalized = hashedPassword.startsWith('$2y$') ? ('$2a$' + hashedPassword.substring(4)) : hashedPassword;
+    return await bcrypt.compare(password, normalized);
 };

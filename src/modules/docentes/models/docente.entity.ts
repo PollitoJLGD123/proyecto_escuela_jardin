@@ -1,35 +1,41 @@
-import { Table, Column, Model, PrimaryKey, AutoIncrement, BelongsTo, ForeignKey, AfterCreate, AllowNull, BeforeCreate, Unique, Length, IsEmail } from 'sequelize-typescript';
+import { Table, Column, Model, PrimaryKey, AutoIncrement, AllowNull, Unique, Length, IsEmail, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { DATE } from 'sequelize';
 import type { DocenteAttributes, DocenteCreationAttributes } from '../types/docente.type';
-import { Dni } from '../../../common/models/dni.entity';
+import { Usuario } from '../../auth/models/usuario.entity';
 
 @Table({
     tableName: 'docentes',
     timestamps: true,
     underscored: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 })
 export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes> {
 
     @PrimaryKey
     @AutoIncrement
-    @Column({
-        field: 'idDocente',
-    })
+    @Column({ field: 'id_docente' })
     idDocente!: number;
+
+    @ForeignKey(() => Usuario)
+    @AllowNull
+    @Column({ field: 'id_usuario', type: DataType.INTEGER, allowNull: true })
+    idUsuario?: number | null;
+
+    @BelongsTo(() => Usuario)
+    usuario?: Usuario | null;
 
     @Column({
         field: 'nombre',
         allowNull: false,
-        type: "varchar(50)",
+        type: DataType.STRING(50),
     })
     nombre!: string;
 
     @Column({
         field: 'apellido',
         allowNull: false,
-        type: "varchar(50)",
+        type: DataType.STRING(50),
     })
     apellido!: string;
 
@@ -43,7 +49,7 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
         field: 'dni',
         allowNull: false,
         unique: true,
-        type: "char(8)",
+        type: DataType.CHAR(8),
     })
     dni!: string;
 
@@ -51,7 +57,7 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
     @Column({
         field: 'email',
         allowNull: false,
-        type: "varchar(50)",
+        type: DataType.STRING(100),
     })
     email!: string;
 
@@ -74,13 +80,13 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
     @Column({
         field: 'telefono',
         allowNull: true,
-        type: "char(9)",
+        type: DataType.CHAR(9),
     })
     telefono?: string;
 
     @AllowNull
     @Column({
-        field: 'fechaNacimiento',
+        field: 'fecha_nacimiento',
         type: DATE,
         allowNull: true,
     })
@@ -88,13 +94,12 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
 
     @AllowNull
     @Column({
-        field: 'fechaIngreso',
+        field: 'fecha_ingreso',
         type: DATE,
         allowNull: true,
     })
     fechaIngreso?: Date;
-
-
+    /*
     @BeforeCreate
     static async validateUniqueDni(instance: Docente) {
         const exists = await Dni.findOne({ where: { dni: instance.dni } });
@@ -106,5 +111,5 @@ export class Docente extends Model<DocenteAttributes, DocenteCreationAttributes>
     @AfterCreate
     static async createDniInTable(instance: Docente) {
         await Dni.create({ dni: instance.dni });
-    }
+    } */
 }

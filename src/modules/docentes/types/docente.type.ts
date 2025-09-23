@@ -19,6 +19,7 @@ export interface DocenteEntity {
     fechaIngreso?: Date;
     direccion?: string;
     telefono?: string;
+    idUsuario?: number | null;
 }
 
 export type DocenteAttributes = InferAttributes<Docente>;

@@ -2,9 +2,7 @@
 import { Alumno } from '../models/alumno.entity';
 import createError from 'http-errors';
 import { AlumnoEntity } from '../types/alumno.type';
-import { Apoderado } from '../../apoderados';
-import { Dni } from '../../../common/models/dni.entity';
-
+//import { Dni } from '../../../common/models/dni.entity';
 async function getAlumnoByIdService(id: number): Promise<Alumno> {
 
     const alumno = await Alumno.findByPk(id);
@@ -23,21 +21,7 @@ async function getAlumnosAllService(): Promise<Alumno[]> {
 
 async function createAlumnoService(alumno: AlumnoEntity): Promise<Alumno> {
 
-    const personalExist = await Dni.findOne({
-        where: {
-            dni: alumno.dni
-        }
-    });
-
-    if (personalExist) {
-        throw createError(400, 'Ya existe una persona registrada con ese dni');
-    }
-
-    const apoderado = await Apoderado.findByPk(alumno.idApoderado);
-
-    if (!apoderado) {
-        throw createError(400, 'No existe un apoderado con ese id');
-    }
+    // los índices (idx) validarán la unicidad de los dni's a nivel de database
     
     const alumnoCreated = await Alumno.create(alumno);
 
@@ -56,23 +40,7 @@ async function updateAlumnoService(id: number, alumno: AlumnoEntity):  Promise<A
         throw createError(404, 'Alumno no encontrado');
     }
 
-    const apoderado = await Apoderado.findByPk(alumno.idApoderado);
-
-    if (!apoderado) {
-        throw createError(400, 'No existe un apoderado con ese id');
-    }
-
-    if (alumno.dni) {
-        const duplicateDni = await Dni.count({
-            where: {
-                dni: alumno.dni,
-            },
-        });
-
-        if (duplicateDni >= 1) {
-            throw createError(400, "Ya existe personal con ese DNI");
-        }
-    }
+    // DB uniqueness will enforce duplicate DNI
 
     const alumnoUpdated = await alumnoExist.update(alumno);
     

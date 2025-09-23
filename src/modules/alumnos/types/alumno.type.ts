@@ -15,11 +15,12 @@ export interface AlumnoRequest extends Request {
 export interface AlumnoEntity {
     nombre: string;
     apellido: string;
-    dni: string;
-    fechaNacimiento?: Date;
+    dni?: string;
+    fechaNacimiento: Date;
+    genero?: 'M' | 'F';
     direccion?: string;
-    telefono?: string;
-    idApoderado: number;
+    telefonoEmergencia?: string;
+    informacionMedica?: string;
 }
 
 export type AlumnoAttributes = InferAttributes<Alumno>;

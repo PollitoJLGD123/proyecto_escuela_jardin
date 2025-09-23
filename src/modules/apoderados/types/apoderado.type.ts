@@ -15,9 +15,10 @@ export interface ApoderadoEntity {
     apellido: string;
     dni: string;
     email: string;
-    edad: number;
-    direccion: string;
-    telefono: string;
+    fechaNacimiento?: Date;
+    direccion?: string;
+    telefono?: string;
+    ocupacion?: string;
 }
 
 export type ApoderadoAttributes = InferAttributes<Apoderado>;

@@ -2,7 +2,7 @@ import { Docente } from '../models/docente.entity';
 import createHttpError from 'http-errors';
 import { DocenteEntity } from '../types/docente.type';
 import { Op } from 'sequelize';
-import { Dni } from '../../../common/models/dni.entity';
+// import { Dni } from '../../../common/models/dni.entity';
 
 async function getDocentesService(): Promise<Docente[]> {
     const docentes = await Docente.findAll();
@@ -31,15 +31,7 @@ async function getDocenteByDniService(dni: string): Promise<Docente> {
 
 async function createDocenteService(data: DocenteEntity): Promise<Docente> {
     
-    const personalExist = await Dni.findOne({
-        where: {
-            dni: data.dni
-        }
-    });
-
-    if (personalExist) {
-        throw createHttpError(400, 'Ya existe una persona registrada con ese dni');
-    }
+    // Unique constraints are handled at DB level (idx_dni_docente, idx_email_docente)
     const docente = await Docente.create(data);
 
     if (!docente) {
@@ -57,17 +49,7 @@ async function updateDocenteService(idDocente: number, data: DocenteEntity): Pro
         throw createHttpError(404, 'Docente no encontrado');
     }
 
-    if (data.dni) {
-        const duplicateDni = await Dni.count({
-            where: {
-                dni: data.dni,
-            },
-        });
-
-        if (duplicateDni >= 1) {
-            throw createHttpError(400, "Ya existe personal con ese DNI");
-        }
-    }
+    // Let DB unique constraints raise errors if duplicating DNI/email
 
     const docenteUpdated = await docenteExist.update(data);
     

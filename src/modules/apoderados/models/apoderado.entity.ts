@@ -1,84 +1,60 @@
-
-import { Model, Column, Table, PrimaryKey, AutoIncrement, AfterCreate, HasMany, AllowNull, Unique, Length, BeforeCreate, IsEmail, IsNumeric } from 'sequelize-typescript';
+import { Model, Column, Table, PrimaryKey, AutoIncrement, AllowNull, Unique, Length, IsEmail, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import type { ApoderadoAttributes, ApoderadoCreationAttributes } from '../types/apoderado.type';
-import { Alumno } from '../../alumnos';
-import { Dni } from '../../../common/models/dni.entity';
+import { Usuario } from '../../auth/models/usuario.entity';
 
 @Table({
     tableName: 'apoderados',
     timestamps: true,
     underscored: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 })
 export class Apoderado extends Model<ApoderadoAttributes, ApoderadoCreationAttributes> {
     @PrimaryKey
     @AutoIncrement
-    @Column({
-        field: 'idApoderado',
-    })
+    @Column({ field: 'id_apoderado' })
     idApoderado!: number;
+
+    @ForeignKey(() => Usuario)
+    @AllowNull
+    @Column({ field: 'id_usuario', type: DataType.INTEGER, allowNull: true })
+    idUsuario?: number | null;
+
+    @BelongsTo(() => Usuario)
+    usuario?: Usuario | null;
 
     @Length({
         min: 5,
         max: 50,
     })
-    @Column({
-        field: 'nombre',
-        allowNull: false,
-        type: "varchar(50)",
-    })
+    @Column({ field: 'nombre', allowNull: false, type: DataType.STRING(50) })
     nombre!: string;
 
     @Length({
         min: 5,
         max: 50,
     })
-    @Column({
-        field: 'apellido',
-        allowNull: false,
-        type: "varchar(50)",
-    })
+    @Column({ field: 'apellido', allowNull: false, type: DataType.STRING(50) })
     apellido!: string;
 
     @Length({
         min: 8,
         max: 8,
     })
-    @Unique
-    @Column({
-        field: 'dni',
-        allowNull: false,
-        unique: true,
-        type: "char(8)",
-    })
+    @Unique('idx_dni_apoderado')
+    @Column({ field: 'dni', allowNull: false, unique: true, type: DataType.CHAR(8) })
     dni!: string;
 
     @IsEmail
-    @Column({
-        field: 'email',
-        allowNull: false,
-        type: "varchar(50)",
-    })
+    @Column({ field: 'email', allowNull: false, type: DataType.STRING(100) })
     email!: string;
-
-    @IsNumeric
-    @Column({
-        field: 'edad',
-        allowNull: true,
-        type: "int",
-    })
-    edad?: number;
 
     @Length({
         min: 1,
         max: 100,
     })
     @AllowNull
-    @Column({
-        field: 'direccion',
-        allowNull: true,
-    })
+    @Column({ field: 'direccion', allowNull: true })
     direccion?: string;
 
     @Length({
@@ -86,32 +62,7 @@ export class Apoderado extends Model<ApoderadoAttributes, ApoderadoCreationAttri
         max: 9,
     })
     @AllowNull
-    @Column({
-        field: 'telefono',
-        allowNull: true,
-        type: "char(9)",
-    })
+    @Column({ field: 'telefono', allowNull: true, type: DataType.CHAR(9) })
     telefono?: string;
-
-    //un apoderado tiene muchos hijos (alumnos)
-    @HasMany(() => Alumno,{
-        foreignKey: 'idApoderado',
-        onDelete: 'CASCADE',
-    })
-    alumnos?: Alumno[];
-
-
-    @BeforeCreate
-    static async validateUniqueDni(instance: Apoderado) {
-        const exists = await Dni.findOne({ where: { dni: instance.dni } });
-        if (exists) {
-            throw new Error(`El DNI ${instance.dni} ya está registrado`);
-        }
-    }
-
-    @AfterCreate
-    static async createDniInTable(instance: Apoderado) {
-        await Dni.create({ dni: instance.dni });
-    }
 
 }

@@ -1,76 +1,55 @@
-import { DATE, ENUM, Op, InferAttributes } from 'sequelize';
-import { Model, Column, Table, PrimaryKey, AutoIncrement, BelongsToMany, HasMany, ForeignKey, BelongsTo, HasOne, AllowNull, Unique, Length, Default, BeforeCreate, IsEmail, AfterCreate } from 'sequelize-typescript';
+import { DATE } from 'sequelize';
+import { Model, Column, Table, PrimaryKey, AutoIncrement, AllowNull, Unique, Length, DataType } from 'sequelize-typescript';
 import type { AlumnoAttributes, AlumnoCreationAttributes } from '../types/alumno.type';
-import { Apoderado } from '../../apoderados';
-import { Dni } from '../../../common/models/dni.entity';
 
 @Table({
     tableName: 'alumnos',
     timestamps: true,
     underscored: true,
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
+    createdAt: 'created_at',
+    updatedAt: 'updated_at',
 })
 export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     @PrimaryKey
     @AutoIncrement
-    @Column({
-        field: 'idAlumno',
-    })
+    @Column({ field: 'id_alumno' })
     idAlumno!: number;
 
     @Length({
         min: 5,
         max: 50,
     })
-    @Column({
-        field: 'nombre',
-        allowNull: false,
-        type: "varchar(50)",
-    })
+    @Column({ field: 'nombre', allowNull: false, type: DataType.STRING(50) })
     nombre!: string;
 
     @Length({
         min: 5,
         max: 50,
     })
-    @Column({
-        field: 'apellido',
-        allowNull: false,
-        type: "varchar(50)",
-    })
+    @Column({ field: 'apellido', allowNull: false, type: DataType.STRING(50) })
     apellido!: string;
 
     @Length({
         min: 8,
         max: 8,
     })
-    @Unique
-    @Column({
-        field: 'dni',
-        allowNull: false,
-        unique: true,
-        type: "char(8)",
-    })
+    @Unique('idx_dni_alumno')
+    @Column({ field: 'dni', allowNull: true, unique: true, type: DataType.CHAR(8) })
     dni!: string;
 
+    @Column({ field: 'fecha_nacimiento', type: DATE, allowNull: false })
+    fechaNacimiento!: Date;
+
     @AllowNull
-    @Column({
-        field: 'fechaNacimiento',
-        type: DATE,
-        allowNull: true,
-    })
-    fechaNacimiento?: Date;
+    @Column({ field: 'genero', type: DataType.ENUM('M', 'F'), allowNull: true })
+    genero?: 'M' | 'F';
 
     @Length({
         min: 1,
         max: 100,
     })
     @AllowNull
-    @Column({
-        field: 'direccion',
-        allowNull: true,
-    })
+    @Column({ field: 'direccion', allowNull: true })
     direccion?: string;
 
     @Length({
@@ -78,39 +57,12 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
         max: 9,
     })
     @AllowNull
-    @Column({
-        field: 'telefono',
-        allowNull: true,
-        type: "char(9)",
-    })
-    telefono?: string;
+    @Column({ field: 'telefono_emergencia', allowNull: true, type: DataType.CHAR(9) })
+    telefonoEmergencia?: string | null;
 
-    //dejamos referencia al apoderado
-    @BelongsTo(() => Apoderado)
-    apoderado?: Apoderado;
+    @AllowNull
+    @Column({ field: 'informacion_medica', allowNull: true, type: DataType.TEXT })
+    informacionMedica?: string | null;
 
-    @ForeignKey(() => Apoderado)
-    @Column({
-        field: 'idApoderado',
-        allowNull: true,
-        type: "int",
-        // references: {
-        //     model: Apoderado,
-        //     key: 'idApoderado',
-        // }
-    })
-    idApoderado!: number;
-
-    @BeforeCreate
-    static async validateUniqueDni(instance: Alumno) {
-        const exists = await Dni.findOne({ where: { dni: instance.dni } });
-        if (exists) {
-            throw new Error(`El DNI ${instance.dni} ya está registrado`);
-        }
-    }
-
-    @AfterCreate
-    static async createDniInTable(instance: Alumno) {
-        await Dni.create({ dni: instance.dni });
-    }
+    // Hooks related to a separate dnis table were removed to align with the current schema
 }

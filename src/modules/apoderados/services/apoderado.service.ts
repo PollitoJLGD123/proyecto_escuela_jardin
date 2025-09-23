@@ -1,7 +1,6 @@
 import { Apoderado } from '../models/apoderado.entity';
 import createHttpError from 'http-errors';
 import { ApoderadoEntity } from '../types/apoderado.type';
-import { Dni } from '../../../common/models/dni.entity';
 
 async function getApoderadoByIdService(idApoderado: number): Promise<Apoderado> {
     const apoderado = await Apoderado.findByPk(idApoderado);
@@ -17,16 +16,7 @@ async function getApoderadosAllService(): Promise<Apoderado[]> {
 }
 
 async function createApoderadoService(apoderado: ApoderadoEntity): Promise<Apoderado> {
-    const personalExist = await Dni.findOne({
-        where: {
-            dni: apoderado.dni
-        }
-    });
-
-    if (personalExist) {
-        throw createHttpError(400, 'Ya existe una persona registrada con ese dni');
-    }
-    
+    // idx
     const apoderadoCreated = await Apoderado.create(apoderado);
 
     if (!apoderadoCreated) {
@@ -42,18 +32,6 @@ async function updateApoderadoService(idApoderado: number, apoderado: ApoderadoE
 
     if (!apoderadoExist) {
         throw createHttpError(404, 'Apoderado no encontrado');
-    }
-
-    if (apoderado.dni) {
-        const duplicateDni = await Dni.count({
-            where: {
-                dni: apoderado.dni,
-            },
-        });
-
-        if (duplicateDni >= 1) {
-            throw createHttpError(400, "Ya existe personal con ese DNI");
-        }
     }
 
     const apoderadoUpdated = await apoderadoExist.update(apoderado);
