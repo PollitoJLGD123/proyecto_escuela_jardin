@@ -2,7 +2,7 @@
 import { Alumno } from '../models/alumno.entity';
 import createError from 'http-errors';
 import { AlumnoEntity } from '../types/alumno.type';
-import { Padre } from '../../padres';
+import { Apoderado } from '../../apoderados';
 import { Dni } from '../../../common/models/dni.entity';
 
 async function getAlumnoByIdService(id: number): Promise<Alumno> {
@@ -33,10 +33,10 @@ async function createAlumnoService(alumno: AlumnoEntity): Promise<Alumno> {
         throw createError(400, 'Ya existe una persona registrada con ese dni');
     }
 
-    const padre = await Padre.findByPk(alumno.idPadre);
+    const apoderado = await Apoderado.findByPk(alumno.idApoderado);
 
-    if (!padre) {
-        throw createError(400, 'No existe un padre con ese id');
+    if (!apoderado) {
+        throw createError(400, 'No existe un apoderado con ese id');
     }
     
     const alumnoCreated = await Alumno.create(alumno);
@@ -56,10 +56,10 @@ async function updateAlumnoService(id: number, alumno: AlumnoEntity):  Promise<A
         throw createError(404, 'Alumno no encontrado');
     }
 
-    const padre = await Padre.findByPk(alumno.idPadre);
+    const apoderado = await Apoderado.findByPk(alumno.idApoderado);
 
-    if (!padre) {
-        throw createError(400, 'No existe un padre con ese id');
+    if (!apoderado) {
+        throw createError(400, 'No existe un apoderado con ese id');
     }
 
     if (alumno.dni) {

@@ -1,19 +1,19 @@
 import { Alumno } from '../../modules/alumnos';
 import { Docente } from '../../modules/docentes';
-import { Padre } from '../../modules/padres';
+import { Apoderado } from '../../modules/apoderados';
 import { Dni } from './dni.entity';
 
 const modelsList = [
     Alumno,
     Docente,
-    Padre,
+    Apoderado,
     Dni,
 ];
 
 const modelsDict = {
     Alumno,
     Docente,
-    Padre,
+    Apoderado,
     Dni,
 }
 

@@ -1,7 +1,7 @@
 import Joi from "joi"
-import { PadreEntity } from '../types/padre.type';
+import { ApoderadoEntity } from '../types/apoderado.type';
 
-export const padreValidationSchema = Joi.object<PadreEntity>({
+export const apoderadoValidationSchema = Joi.object<ApoderadoEntity>({
     nombre: Joi.string().min(5).max(50).required(),
     apellido: Joi.string().min(5).max(50).required(),
     dni: Joi.string().min(8).max(8).required(),
@@ -11,6 +11,6 @@ export const padreValidationSchema = Joi.object<PadreEntity>({
     telefono: Joi.string().min(9).max(9).optional(),
 });
 
-export const padreParamsValidationSchema = Joi.object({
+export const apoderadoParamsValidationSchema = Joi.object({
     id: Joi.number().positive().required(),
 });

@@ -1,7 +1,7 @@
 import { DATE, ENUM, Op, InferAttributes } from 'sequelize';
 import { Model, Column, Table, PrimaryKey, AutoIncrement, BelongsToMany, HasMany, ForeignKey, BelongsTo, HasOne, AllowNull, Unique, Length, Default, BeforeCreate, IsEmail, AfterCreate } from 'sequelize-typescript';
 import type { AlumnoAttributes, AlumnoCreationAttributes } from '../types/alumno.type';
-import { Padre } from '../../padres';
+import { Apoderado } from '../../apoderados';
 import { Dni } from '../../../common/models/dni.entity';
 
 @Table({
@@ -85,21 +85,21 @@ export class Alumno extends Model<AlumnoAttributes, AlumnoCreationAttributes> {
     })
     telefono?: string;
 
-    //dejamos referencia al padre
-    @BelongsTo(() => Padre)
-    padre?: Padre;
+    //dejamos referencia al apoderado
+    @BelongsTo(() => Apoderado)
+    apoderado?: Apoderado;
 
-    @ForeignKey(() => Padre)
+    @ForeignKey(() => Apoderado)
     @Column({
-        field: 'idPadre',
+        field: 'idApoderado',
         allowNull: true,
         type: "int",
         // references: {
-        //     model: Padre,
-        //     key: 'idPadre',
+        //     model: Apoderado,
+        //     key: 'idApoderado',
         // }
     })
-    idPadre!: number;
+    idApoderado!: number;
 
     @BeforeCreate
     static async validateUniqueDni(instance: Alumno) {
